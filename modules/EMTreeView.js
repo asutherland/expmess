@@ -54,6 +54,14 @@ function EMTreeView(aMessages) {
 }
 
 EMTreeView.prototype = {
+  _dateSortFunc: function EMTVDateSortFunc(aMessage, aNotherMessage) {
+    // (folderMessages get cached, for now...)
+    let aDate = aMessage.folderMessage.date;
+    let bDate = aNotherMessage.folderMessage.date;
+    
+    return aDate - bDate;
+  },
+
   get messages() { return this._messages; },
   set messages(aMessages) {
     if (this.treeBox != null && this._messages != null)
@@ -61,6 +69,9 @@ EMTreeView.prototype = {
   
     LOG.debug("received new set of messages")
     this._messages = aMessages;
+    // M0: let's sort by date... and let's mutate in place, why not?
+    this._messages.sort(this._dateSortFunc);
+    
     if (this.treeBox != null && this._messages != null) {
       LOG.debug("invalidating treebox");
       if (this._messages != null)
@@ -83,6 +94,19 @@ EMTreeView.prototype = {
     LOG.debug("received treeBox: " + treeBox);
     this.treeBox = treeBox;
   },
+
+  // this is only needed for M0; once we hit M1 we can take it out since we
+  //  will be largely living in a post-decoding world.  And really, the parts
+  //  where we aren't should be smoothed over in the gloda abstractions anyways.
+  _mimeConverter: null,
+  _deMime: function EMTVIndexDeMime(aString) {
+    if (this._mimeConverter == null) {
+      this._mimeConverter = Cc["@mozilla.org/messenger/mimeconverter;1"].
+                            getService(Ci.nsIMimeConverter);
+    }
+    
+    return this._mimeConverter.decodeMimeHeader(aString, null, false, true);
+  },
   
   getCellText: function(idx, column) {
     if (this._messages == null || idx >= this._messages.length) {
@@ -99,7 +123,7 @@ EMTreeView.prototype = {
     
     // sender, subject, date
     if (column.index == 0)
-      return msgHdr.author;
+      return this._deMime(msgHdr.author);
     else if (column.index == 1)
       return msgHdr.subject;
     else if (column.index == 2)
