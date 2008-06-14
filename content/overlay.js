@@ -11,14 +11,15 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Experimental Message View.
+ * The Original Code is Thunderbird Experimental Message View.
  *
  * The Initial Developer of the Original Code is
- * Andrew Sutherland.
+ * Mozilla Messaging, Inc.
  * Portions created by the Initial Developer are Copyright (C) 2008
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   Andrew Sutherland <asutherland@asutherland.org>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -34,11 +35,44 @@
  * 
  * ***** END LICENSE BLOCK ***** */
 
+Components.utils.import("resource://expmess/modules/EMTreeView.js");
+Components.utils.import("resource://gloda/modules/gloda.js");
+Components.utils.import("resource://gloda/modules/log4moz.js");
+
 var expmess = {
+  expMessageTree: null,
+  jsMessageTreeView: null,
+  
+  log: Log4Moz.Service.getLogger("expmess.overlay"),
+
+  _headerHandler: {
+    onStartHeaders: function() {
+      var msgHdr = gDBView.hdrForFirstSelectedMessage;
+      if (msgHdr != null) {
+        var message = Gloda.getMessageForHeader(msgHdr);
+        expmess.log.info("Conversation: " + message.conversation.id + " : " +
+                         message.conversation.subject);
+        var messages = message.conversation.messages;
+        
+        expmess.log.info("We got " + messages.length + " messages");
+        
+        expmess.jsMessageTreeView.messages = messages;
+      }
+    },
+      
+    onEndHeaders: function() {},
+  },
+
   onLoad: function() {
     // initialization code
     this.initialized = true;
     this.strings = document.getElementById("expmess-strings");
+    
+    this.expMessageTree = document.getElementById("expMessageTree");
+    this.jsMessageTreeView = new EMTreeView(null);
+    this.expMessageTree.view = this.jsMessageTreeView; 
+    
+    gMessageListeners.push(this._headerHandler);
   },
   onMenuItemCommand: function(e) {
     var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
