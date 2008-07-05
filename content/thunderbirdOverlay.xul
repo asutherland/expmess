@@ -53,16 +53,28 @@
   <box id="messengerBox">
     <splitter id="datamine_splitter" collapse="after" persist="state"/>
     <vbox id="datamine">
-      <tree id="expMessageTree" flex="1">
+      <label value="Messages in thread:"/>
+      <tree id="threadMessageTree" flex="1">
         <treecols>
-          <treecol id="expSenderCol" flex="4" primary="true" label="Sender"/>
+          <treecol id="threadSenderCol" flex="4" primary="true" label="Sender"/>
           <splitter class="tree-splitter"/>
-          <treecol id="expSubjectCol" flex="7" label="Subject"/>
+          <treecol id="threadSubjectCol" flex="7" label="Subject"/>
           <splitter class="tree-splitter"/>
-          <treecol id="expDateCol" flex="2" label="Date"/>
+          <treecol id="threadDateCol" flex="2" label="Date"/>
         </treecols>
         <treechildren/>
       </tree>
+      <label value="Other messages by author:"/>
+      <tree id="authorMessageTree" flex="1">
+        <treecols>
+          <treecol id="authorSenderCol" flex="4" primary="true" label="Sender"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="authorSubjectCol" flex="7" label="Subject"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="authorDateCol" flex="2" label="Date"/>
+        </treecols>
+        <treechildren/>
+      </tree>      
     </vbox>
   </box>
 </overlay>

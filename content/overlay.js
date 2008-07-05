@@ -49,14 +49,24 @@ var expmess = {
     onStartHeaders: function() {
       var msgHdr = gDBView.hdrForFirstSelectedMessage;
       if (msgHdr != null) {
-        var message = Gloda.getMessageForHeader(msgHdr);
-        expmess.log.info("Conversation: " + message.conversation.id + " : " +
-                         message.conversation.subject);
-        var messages = message.conversation.messages;
+        var selectedMessage = Gloda.getMessageForHeader(msgHdr);
+        expmess.log.info("Conversation: " + selectedMessage.conversation.id +
+                          " : " + selectedMessage.conversation.subject);
+        var threadMessages = selectedMessage.conversation.messages;
         
-        expmess.log.info("We got " + messages.length + " messages");
+        expmess.log.info("We got " + threadMessages.length + " messages");
         
-        expmess.jsMessageTreeView.messages = messages;
+        expmess.jsThreadMessageTreeView.messages = threadMessages;
+        
+        var attrFrom = Gloda.getAttrDef(Gloda.BUILT_IN, "FROM");
+        var authorIdentityAPV = selectedMessage.getSingleAttribute(attrFrom);
+        if (authorIdentityAPV == null) {
+          expmess.log.error("authorIdentityAPV is null using attrib " +
+                            attrFrom);
+        }
+        authorMessages = Gloda.queryMessagesAPV([authorIdentityAPV]);
+        
+        expmess.jsAuthorMessageTreeView.messages = authorMessages;
       }
     },
       
@@ -68,9 +78,13 @@ var expmess = {
     this.initialized = true;
     this.strings = document.getElementById("expmess-strings");
     
-    this.expMessageTree = document.getElementById("expMessageTree");
-    this.jsMessageTreeView = new EMTreeView(null);
-    this.expMessageTree.view = this.jsMessageTreeView; 
+    this.threadMessageTree = document.getElementById("threadMessageTree");
+    this.jsThreadMessageTreeView = new EMTreeView(null);
+    this.threadMessageTree.view = this.jsThreadMessageTreeView;
+    
+    this.authorMessageTree = document.getElementById("authorMessageTree");
+    this.jsAuthorMessageTreeView = new EMTreeView(null);
+    this.authorMessageTree.view = this.jsAuthorMessageTreeView;
     
     gMessageListeners.push(this._headerHandler);
   },
