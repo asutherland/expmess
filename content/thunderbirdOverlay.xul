@@ -54,7 +54,9 @@
     <splitter id="datamine_splitter" collapse="after" persist="state"/>
     <vbox id="datamine">
       <label value="Messages in thread:"/>
-      <tree id="threadMessageTree" flex="1">
+      <tree id="threadMessageTree" flex="1"
+            onclick="return expmess.onClicked(expmess.threadMessageTree,
+                          expmess.jsThreadMessageTreeView, event);">
         <treecols>
           <treecol id="threadSenderCol" flex="4" primary="true" label="Sender"/>
           <splitter class="tree-splitter"/>
@@ -65,7 +67,9 @@
         <treechildren/>
       </tree>
       <label value="Other messages by author:"/>
-      <tree id="authorMessageTree" flex="1">
+      <tree id="authorMessageTree" flex="1"
+            onclick="return expmess.onClicked(expmess.authorMessageTree,
+                          expmess.jsAuthorMessageTreeView, event);" >
         <treecols>
           <treecol id="authorSenderCol" flex="4" primary="true" label="Sender"/>
           <splitter class="tree-splitter"/>

@@ -40,8 +40,10 @@ Components.utils.import("resource://gloda/modules/gloda.js");
 Components.utils.import("resource://gloda/modules/log4moz.js");
 
 var expmess = {
-  expMessageTree: null,
-  jsMessageTreeView: null,
+  threadMessageTree: null,
+  jsThreadMessageTreeView: null,
+  authorMessageTree: null,
+  jsAuthorMessageTreeView: null,
   
   log: Log4Moz.Service.getLogger("expmess.overlay"),
 
@@ -95,5 +97,26 @@ var expmess = {
                                 this.strings.getString("helloMessage"));
   },
 
+  onClicked: function(tree, view, event) {
+    if (event.detail == 2 && event.button == 0) {
+      var tbo = tree.treeBoxObject;
+      var row = {}, col = {}, child = {};
+      tbo.getCellAt(event.clientX, event.clientY, row, col, child);
+      
+      // if they didn't click on something, let's not do anything...
+      if (row.value < 0)
+        return false;
+      
+      this.log.debug("double-clicked: " + row.value + ", " + col.value + ", " + child.value);
+      var message = view.messages[row.value];
+      this.log.debug("  subject: " + message.conversation.subject);
+      var msgHdr = message.folderMessage;
+      msgWindow.windowCommands.selectFolder(msgHdr.folder.URI);
+      msgWindow.windowCommands.selectMessage(msgHdr.folder.getUriForMsg(msgHdr));
+       
+      return true;
+    }
+    return false;   
+  },
 };
 window.addEventListener("load", function(e) { expmess.onLoad(e); }, false);

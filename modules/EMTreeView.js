@@ -127,7 +127,7 @@ EMTreeView.prototype = {
     else if (column.index == 1)
       return msgHdr.subject;
     else if (column.index == 2)
-      return "" + new Date(msgHdr.date / 1000);
+      return (new Date(msgHdr.date / 1000)).toLocaleString();
     else
       return "whaaa?";
   },
@@ -151,10 +151,11 @@ EMTreeView.prototype = {
   cycleHeader: function(col, elem) {},
   selectionChanged: function() {},
   cycleCell: function(idx, column) {},
-  performAction: function(action) {},
-  performActionOnCell: function(action, index, column) {},
+  performAction: function(action) {LOG.info("perform action: " + action); },
+  performActionOnCell: function(action, index, column) {
+    LOG.info("cell perform action: " + action + ", " + index + ", " + column);
+  },
   getRowProperties: function(idx, column, prop) {},
   getCellProperties: function(idx, column, prop) {},
-  getColumnProperties: function(column, element, prop) {},
-  
+  getColumnProperties: function(column, element, prop) {},  
 };
