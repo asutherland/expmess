@@ -45,11 +45,6 @@
     <stringbundle id="expmess-strings" src="chrome://expmess/locale/expmess.properties"/>
   </stringbundleset>
 
-  <menupopup id="taskPopup">
-    <menuitem id="expmess-hello" label="&expmess.label;" 
-              oncommand="expmess.onMenuItemCommand(event);"/>
-  </menupopup>
-  
   <box id="messengerBox">
     <splitter id="datamine_splitter" collapse="after" persist="state"/>
     <vbox id="datamine">
