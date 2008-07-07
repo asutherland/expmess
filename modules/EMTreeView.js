@@ -82,16 +82,16 @@ EMTreeView.prototype = {
 
   get rowCount() {
     if (this._messages == null) {
-      LOG.debug("row-count retrieval: no messages!");
+      //LOG.debug("row-count retrieval: no messages!");
       return 0;
     }
     
-    LOG.debug("row-count retrieval: " + this._messages.length);
+    //LOG.debug("row-count retrieval: " + this._messages.length);
     return this._messages.length;
   },
   
   setTree: function EMTVSetTree(treeBox) {
-    LOG.debug("received treeBox: " + treeBox);
+    //LOG.debug("received treeBox: " + treeBox);
     this.treeBox = treeBox;
   },
 

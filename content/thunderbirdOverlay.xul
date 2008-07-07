@@ -47,7 +47,34 @@
 
   <box id="messengerBox">
     <splitter id="datamine_splitter" collapse="after" persist="state"/>
-    <vbox id="datamine">
+    <vbox id="datamine" persist="width">
+      <groupbox id="mineStatusBox" flex="0">
+        <caption label="Indexing"/>
+        <grid>
+          <columns>
+            <column flex="0"/>
+            <column flex="1"/>
+          </columns>
+          <rows>
+            <row>
+              <label value="Status:"/>
+              <label id="mineStatusLabel" value="Idle"/>
+            </row>
+            <row>
+              <label value="Folders:"/>
+              <progressmeter id="mineFolderProgress" mode="determinate" value="0"
+                tooltiptext="Folders To Index"/>
+            </row>
+            <row>
+              <label value="Messages:"/>
+              <progressmeter id="mineMessageProgress" mode="determinate" value="0"
+                tooltiptext="Current Folder Progress"/>
+            </row>
+          </rows>
+        </grid>
+        <button id="mineIndexButton" label="Go Index"
+          onclick="return expmess.onGoIndex(); " />
+      </groupbox>
       <label value="Messages in thread:"/>
       <tree id="threadMessageTree" flex="1"
             onclick="return expmess.onClicked(expmess.threadMessageTree,
@@ -66,7 +93,8 @@
             onclick="return expmess.onClicked(expmess.authorMessageTree,
                           expmess.jsAuthorMessageTreeView, event);" >
         <treecols>
-          <treecol id="authorSenderCol" flex="4" primary="true" label="Sender"/>
+          <treecol id="authorSenderCol" flex="4" primary="true" label="Sender"
+            hidden="true"/>
           <splitter class="tree-splitter"/>
           <treecol id="authorSubjectCol" flex="7" label="Subject"/>
           <splitter class="tree-splitter"/>

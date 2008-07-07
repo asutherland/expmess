@@ -36,14 +36,19 @@
  * ***** END LICENSE BLOCK ***** */
 
 Components.utils.import("resource://expmess/modules/EMTreeView.js");
-Components.utils.import("resource://gloda/modules/gloda.js");
 Components.utils.import("resource://gloda/modules/log4moz.js");
+Components.utils.import("resource://gloda/modules/gloda.js");
+Components.utils.import("resource://gloda/modules/indexer.js");
 
 var expmess = {
   threadMessageTree: null,
   jsThreadMessageTreeView: null,
   authorMessageTree: null,
   jsAuthorMessageTreeView: null,
+  indexingStatusLabel: null,
+  progressFolders: null,
+  progressMessages: null,
+  progressListener: null,
   
   log: Log4Moz.Service.getLogger("expmess.overlay"),
 
@@ -89,13 +94,40 @@ var expmess = {
     this.authorMessageTree.view = this.jsAuthorMessageTreeView;
     
     gMessageListeners.push(this._headerHandler);
+    
+    this.indexingStatusLabel = document.getElementById("mineStatusLabel");
+    this.progressFolders = document.getElementById("mineFolderProgress");
+    this.progressMessages = document.getElementById("mineMessageProgress");
+    
+    this.progressListener = GlodaIndexer.addListener(
+      function(status,fn, cf, tf, cm, tm) {
+        expmess.onIndexProgress(status, fn,cf,tf,cm,tm);
+      });
   },
+  
+  onUnload: function() {
+    if (this.progressListener) {
+      GlodaIndexer.removeListener(this.progressListener);
+      this.progressListener = null;
+    }
+  },
+
   onMenuItemCommand: function(e) {
     var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
                                   .getService(Components.interfaces.nsIPromptService);
     promptService.alert(window, this.strings.getString("helloMessageTitle"),
                                 this.strings.getString("helloMessage"));
   },
+
+  onIndexProgress: function(aStatus, aFolderName,
+                            aCurFolderIndex, aTotalFolders,
+                            aCurMessageIndex, aTotalMessages) {
+    this.indexingStatusLabel.value = aStatus;
+    this.progressFolders.value = Math.floor(aCurFolderIndex / aTotalFolders * 
+                                            100);
+    this.progressMessages.value = Math.floor(aCurMessageIndex / aTotalMessages *
+                                             100);
+  },  
 
   onClicked: function(tree, view, event) {
     if (event.detail == 2 && event.button == 0) {
@@ -118,5 +150,12 @@ var expmess = {
     }
     return false;   
   },
+  
+  onGoIndex: function() {
+    GlodaIndexer.init(window, msgWindow);  
+    GlodaIndexer.indexEverything();
+  },
 };
 window.addEventListener("load", function(e) { expmess.onLoad(e); }, false);
+window.addEventListener("unload", function(e) { expmess.onUnload(e); }, false);
+
