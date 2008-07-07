@@ -53,7 +53,7 @@ var expmess = {
   log: Log4Moz.Service.getLogger("expmess.overlay"),
 
   _headerHandler: {
-    onStartHeaders: function() {
+    onStartHeaders: function() { try {
       var msgHdr = gDBView.hdrForFirstSelectedMessage;
       if (msgHdr != null) {
         var selectedMessage = Gloda.getMessageForHeader(msgHdr);
@@ -74,8 +74,9 @@ var expmess = {
         authorMessages = Gloda.queryMessagesAPV([authorIdentityAPV]);
         
         expmess.jsAuthorMessageTreeView.messages = authorMessages;
+       
       }
-    },
+    } catch (ex) {} },
       
     onEndHeaders: function() {},
   },
