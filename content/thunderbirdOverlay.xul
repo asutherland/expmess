@@ -39,7 +39,8 @@
 <?xml-stylesheet href="chrome://expmess/skin/overlay.css" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://expmess/locale/expmess.dtd">
 <overlay id="expmess-overlay"
-         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+         xmlns:html="http://www.w3.org/1999/xhtml">
   <script src="overlay.js"/>
   <stringbundleset id="stringbundleset">
     <stringbundle id="expmess-strings" src="chrome://expmess/locale/expmess.properties"/>
@@ -88,10 +89,17 @@
         </treecols>
         <treechildren/>
       </tree>
+      <hbox flex="0">
+        <html:canvas id="authorCanvas" flex="1"
+          style="height: 80px; padding: 4px; width:300px;"></html:canvas>
+      </hbox>
       <label value="Other messages by author:"/>
       <tree id="authorMessageTree" flex="1"
             onclick="return expmess.onClicked(expmess.authorMessageTree,
-                          expmess.jsAuthorMessageTreeView, event);" >
+                          expmess.jsAuthorMessageTreeView, event);"
+            onselect="return expmess.onSelected(expmess.authorMessageTree,
+                          expmess.jsAuthorMessageTreeView, expmess.visAuthor);"
+            >
         <treecols>
           <treecol id="authorSenderCol" flex="4" primary="true" label="Sender"
             hidden="true"/>

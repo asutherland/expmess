@@ -35,20 +35,27 @@
  * 
  * ***** END LICENSE BLOCK ***** */
 
-Components.utils.import("resource://expmess/modules/EMTreeView.js");
 Components.utils.import("resource://gloda/modules/log4moz.js");
 Components.utils.import("resource://gloda/modules/gloda.js");
 Components.utils.import("resource://gloda/modules/indexer.js");
 
+Components.utils.import("resource://expmess/modules/EMTreeView.js");
+Components.utils.import("resource://expmess/modules/EMVis.js");
+
 var expmess = {
   threadMessageTree: null,
   jsThreadMessageTreeView: null,
+  
   authorMessageTree: null,
   jsAuthorMessageTreeView: null,
+  
   indexingStatusLabel: null,
   progressFolders: null,
   progressMessages: null,
   progressListener: null,
+  
+  authorCanvas: null,
+  visAuthor: null,
   
   log: Log4Moz.Service.getLogger("expmess.overlay"),
 
@@ -74,6 +81,7 @@ var expmess = {
         authorMessages = Gloda.queryMessagesAPV([authorIdentityAPV]);
         
         expmess.jsAuthorMessageTreeView.messages = authorMessages;
+        expmess.visAuthor.messages = authorMessages;
        
       }
     } catch (ex) {} },
@@ -89,6 +97,10 @@ var expmess = {
     this.threadMessageTree = document.getElementById("threadMessageTree");
     this.jsThreadMessageTreeView = new EMTreeView(null);
     this.threadMessageTree.view = this.jsThreadMessageTreeView;
+    
+    this.authorCanvas = document.getElementById("authorCanvas");
+    this.visAuthor = new EMVis(this.authorCanvas, null);
+    this.visAuthor.render();
     
     this.authorMessageTree = document.getElementById("authorMessageTree");
     this.jsAuthorMessageTreeView = new EMTreeView(null);
@@ -150,6 +162,12 @@ var expmess = {
       return true;
     }
     return false;   
+  },
+  
+  onSelected: function(tree, view, vis) {
+    if (tree.currentIndex >= 0) {
+      vis.selectedMessage = view.messages[tree.currentIndex];
+    }
   },
   
   onGoIndex: function() {

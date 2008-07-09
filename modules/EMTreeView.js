@@ -127,7 +127,7 @@ EMTreeView.prototype = {
     else if (column.index == 1)
       return msgHdr.subject;
     else if (column.index == 2)
-      return (new Date(msgHdr.date / 1000)).toLocaleString();
+      return message.date.toLocaleDateString();
     else
       return "whaaa?";
   },
