@@ -49,6 +49,45 @@
   <box id="messengerBox">
     <splitter id="datamine_splitter" collapse="after" persist="state"/>
     <vbox id="datamine" persist="width">
+      <hbox id="authorBox" flex="0">
+        <image id="authorPicture" src="" width="53" height="53" flex="0"/>
+        <label id="authorName" class="header" value=""/>
+      </hbox>
+      <hbox flex="0">
+        <html:canvas id="authorCanvas" flex="1"
+          style="height: 80px; padding: 4px; width:300px;"></html:canvas>
+      </hbox>
+      <label value="Other messages by author:"/>
+      <tree id="authorMessageTree" flex="1"
+            onclick="return expmess.onClicked(expmess.authorMessageTree,
+                          expmess.jsAuthorMessageTreeView, event);"
+            onselect="return expmess.onSelected(expmess.authorMessageTree,
+                          expmess.jsAuthorMessageTreeView, expmess.visAuthor);"
+            >
+        <treecols>
+          <treecol id="authorSenderCol" flex="4" primary="true" label="Sender"
+            hidden="true"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="authorSubjectCol" flex="7" label="Subject"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="authorDateCol" flex="2" label="Date"/>
+        </treecols>
+        <treechildren/>
+      </tree>
+      <separator class="groove"/>      
+      <label value="Messages in thread:"/>
+      <tree id="threadMessageTree" flex="1"
+            onclick="return expmess.onClicked(expmess.threadMessageTree,
+                          expmess.jsThreadMessageTreeView, event);">
+        <treecols>
+          <treecol id="threadSenderCol" flex="4" primary="true" label="Sender"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="threadSubjectCol" flex="7" label="Subject"/>
+          <splitter class="tree-splitter"/>
+          <treecol id="threadDateCol" flex="2" label="Date"/>
+        </treecols>
+        <treechildren/>
+      </tree>
       <groupbox id="mineStatusBox" flex="0">
         <caption label="Indexing"/>
         <grid>
@@ -76,40 +115,6 @@
         <button id="mineIndexButton" label="Go Index"
           onclick="return expmess.onGoIndex(); " />
       </groupbox>
-      <label value="Messages in thread:"/>
-      <tree id="threadMessageTree" flex="1"
-            onclick="return expmess.onClicked(expmess.threadMessageTree,
-                          expmess.jsThreadMessageTreeView, event);">
-        <treecols>
-          <treecol id="threadSenderCol" flex="4" primary="true" label="Sender"/>
-          <splitter class="tree-splitter"/>
-          <treecol id="threadSubjectCol" flex="7" label="Subject"/>
-          <splitter class="tree-splitter"/>
-          <treecol id="threadDateCol" flex="2" label="Date"/>
-        </treecols>
-        <treechildren/>
-      </tree>
-      <hbox flex="0">
-        <html:canvas id="authorCanvas" flex="1"
-          style="height: 80px; padding: 4px; width:300px;"></html:canvas>
-      </hbox>
-      <label value="Other messages by author:"/>
-      <tree id="authorMessageTree" flex="1"
-            onclick="return expmess.onClicked(expmess.authorMessageTree,
-                          expmess.jsAuthorMessageTreeView, event);"
-            onselect="return expmess.onSelected(expmess.authorMessageTree,
-                          expmess.jsAuthorMessageTreeView, expmess.visAuthor);"
-            >
-        <treecols>
-          <treecol id="authorSenderCol" flex="4" primary="true" label="Sender"
-            hidden="true"/>
-          <splitter class="tree-splitter"/>
-          <treecol id="authorSubjectCol" flex="7" label="Subject"/>
-          <splitter class="tree-splitter"/>
-          <treecol id="authorDateCol" flex="2" label="Date"/>
-        </treecols>
-        <treechildren/>
-      </tree>      
     </vbox>
   </box>
 </overlay>

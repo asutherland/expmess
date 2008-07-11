@@ -38,6 +38,7 @@
 Components.utils.import("resource://gloda/modules/log4moz.js");
 Components.utils.import("resource://gloda/modules/gloda.js");
 Components.utils.import("resource://gloda/modules/indexer.js");
+Components.utils.import("resource://gloda/modules/utils.js");
 
 Components.utils.import("resource://expmess/modules/EMTreeView.js");
 Components.utils.import("resource://expmess/modules/EMVis.js");
@@ -56,6 +57,9 @@ var expmess = {
   
   authorCanvas: null,
   visAuthor: null,
+  
+  authorImage: null,
+  authorName: null,
   
   log: Log4Moz.Service.getLogger("expmess.overlay"),
 
@@ -82,9 +86,17 @@ var expmess = {
         
         expmess.jsAuthorMessageTreeView.messages = authorMessages;
         expmess.visAuthor.messages = authorMessages;
-       
+        
+        // so, the e-mail address really shouldn't be all unicode-y, but this
+        //  at the very least converts the string to a byte array.
+        var md5hash = GlodaUtils.md5HashString(selectedMessage.from.value);
+        var gravURL = "http://www.gravatar.com/avatar/" + md5hash + 
+                                "?d=identicon&s=80&r=g";
+        expmess.log.info("Gravatar URL: " + gravURL);
+        expmess.authorImage.src = gravURL;
+        expmess.authorName.value = selectedMessage.from.contact.name;
       }
-    } catch (ex) {} },
+    } catch (ex) {expmess.log.error("Exception:" + ex); } },
       
     onEndHeaders: function() {},
   },
@@ -105,6 +117,9 @@ var expmess = {
     this.authorMessageTree = document.getElementById("authorMessageTree");
     this.jsAuthorMessageTreeView = new EMTreeView(null);
     this.authorMessageTree.view = this.jsAuthorMessageTreeView;
+    
+    this.authorImage = document.getElementById("authorPicture");
+    this.authorName = document.getElementById("authorName");
     
     gMessageListeners.push(this._headerHandler);
     
