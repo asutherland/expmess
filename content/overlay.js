@@ -93,7 +93,7 @@ var expmess = {
         var md5hash = GlodaUtils.md5HashString(selectedMessage.from.value);
         var gravURL = "http://www.gravatar.com/avatar/" + md5hash + 
                                 "?d=identicon&s=80&r=g";
-        expmess.log.info("Gravatar URL: " + gravURL);
+        //expmess.log.info("Gravatar URL: " + gravURL);
         expmess.authorImage.src = gravURL;
         expmess.authorName.value = selectedMessage.from.contact.name;
       }
