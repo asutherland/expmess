@@ -55,17 +55,8 @@ function EMTreeView(aMessages) {
 
 EMTreeView.prototype = {
   _dateSortFunc: function EMTVDateSortFunc(aMessage, aNotherMessage) {
-    // (folderMessages get cached, for now...)
-    let aFolderMessage = aMessage.folderMessage; 
-    let bFolderMessage = aNotherMessage.folderMessage;
-    // sort the null messages to the end of the list...
-    if (aFolderMessage === null)
-      return (bFolderMessage === null) ? 0 : 1;
-    else if (bFolderMessage === null)
-      return -1;
-     
-    let aDate = aFolderMessage.date;
-    let bDate = bFolderMessage.date;
+    let aDate = aMessage.date;
+    let bDate = aNotherMessage.date;
     
     return aDate - bDate;
   },
@@ -120,17 +111,14 @@ EMTreeView.prototype = {
     }
     
     let message = this._messages[idx];
-    let msgHdr = message.folderMessage;
-    
-    // handle ghosts
-    if (msgHdr == null)
-      return "..."
+    // we no longer need the message header
+    //let msgHdr = message.folderMessage;
     
     // sender, subject, date
     if (column.index == 0)
-      return this._deMime(msgHdr.author);
+      return message.from.contact.name;
     else if (column.index == 1)
-      return msgHdr.subject;
+      return message.conversation.subject;
     else if (column.index == 2)
       return message.date.toLocaleDateString();
     else
