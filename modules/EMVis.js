@@ -84,10 +84,12 @@ EMVis.prototype = {
   
   set selectedMessage(aMessage) {
     this._selectedMessageIDs = {};
-    this._selectedMessageIDs[aMessage.id] = TANGO_COLORS[2][1];
-
     this._selectedConversationIDs = {};
-    this._selectedConversationIDs[aMessage.conversationID] = TANGO_COLORS[2][0];
+
+    if (aMessage !== null) {
+      this._selectedMessageIDs[aMessage.id] = TANGO_COLORS[2][1];
+      this._selectedConversationIDs[aMessage.conversationID] = TANGO_COLORS[2][0];
+    }
 
     this.render();
   },

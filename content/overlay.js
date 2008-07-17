@@ -86,6 +86,7 @@ var expmess = {
         
         expmess.jsAuthorMessageTreeView.messages = authorMessages;
         expmess.visAuthor.messages = authorMessages;
+        expmess.visAuthor.selectedMessage = null;
         
         // so, the e-mail address really shouldn't be all unicode-y, but this
         //  at the very least converts the string to a byte array.
@@ -96,7 +97,16 @@ var expmess = {
         expmess.authorImage.src = gravURL;
         expmess.authorName.value = selectedMessage.from.contact.name;
       }
-    } catch (ex) {expmess.log.error("Exception:" + ex); } },
+    } catch (ex) {
+      expmess.log.error("Exception:" + ex);
+      expmess.authorImage.src = null;
+      expmess.authorName.value = ":(";
+      expmess.jsThreadMessageTreeView.messages = [];
+      expmess.jsAuthorMessageTreeView.messages = [];
+      expmess.visAuthor.messages = [];
+      expmess.visAuthor.selectedMessage = null;
+      } 
+    },
       
     onEndHeaders: function() {},
   },
