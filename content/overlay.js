@@ -76,7 +76,7 @@ var expmess = {
         
         expmess.jsThreadMessageTreeView.messages = threadMessages;
         
-        var attrFrom = Gloda.getAttrDef(Gloda.BUILT_IN, "FROM");
+        var attrFrom = Gloda.getAttrDef(Gloda.BUILT_IN, "from");
         var authorIdentityAPV = selectedMessage.getSingleAttribute(attrFrom);
         if (authorIdentityAPV == null) {
           expmess.log.error("authorIdentityAPV is null using attrib " +
@@ -186,7 +186,6 @@ var expmess = {
   },
   
   onGoIndex: function() {
-    GlodaIndexer.init(window, msgWindow);  
     GlodaIndexer.indexEverything();
   },
 };

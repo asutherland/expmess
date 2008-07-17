@@ -56,8 +56,16 @@ function EMTreeView(aMessages) {
 EMTreeView.prototype = {
   _dateSortFunc: function EMTVDateSortFunc(aMessage, aNotherMessage) {
     // (folderMessages get cached, for now...)
-    let aDate = aMessage.folderMessage.date;
-    let bDate = aNotherMessage.folderMessage.date;
+    let aFolderMessage = aMessage.folderMessage; 
+    let bFolderMessage = aNotherMessage.folderMessage;
+    // sort the null messages to the end of the list...
+    if (aFolderMessage === null)
+      return (bFolderMessage === null) ? 0 : 1;
+    else if (bFolderMessage === null)
+      return -1;
+     
+    let aDate = aFolderMessage.date;
+    let bDate = bFolderMessage.date;
     
     return aDate - bDate;
   },
@@ -67,16 +75,13 @@ EMTreeView.prototype = {
     if (this.treeBox != null && this._messages != null)
       this.treeBox.rowCountChanged(0, -this._messages.length);
   
-    LOG.debug("received new set of messages")
     this._messages = aMessages;
     // M0: let's sort by date... and let's mutate in place, why not?
     this._messages.sort(this._dateSortFunc);
     
     if (this.treeBox != null && this._messages != null) {
-      LOG.debug("invalidating treebox");
       if (this._messages != null)
         this.treeBox.rowCountChanged(0, this._messages.length);
-      LOG.debug("invalidated treebox");
     }
   },
 
