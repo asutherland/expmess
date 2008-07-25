@@ -60,6 +60,8 @@ EMTreeView.prototype = {
     
     return aDate - bDate;
   },
+  
+  // ignoring nsIScriptableDateFormat: @mozilla.org/intl/scriptabledateformat;1
 
   get messages() { return this._messages; },
   set messages(aMessages) {

@@ -63,57 +63,70 @@ var expmess = {
   
   log: Log4Moz.Service.getLogger("expmess.overlay"),
 
-  _headerHandler: {
-    onStartHeaders: function() { try {
-      var msgHdr = gDBView.hdrForFirstSelectedMessage;
+  observe: function(aSubject, aTopic, aData) {
+    if (aTopic == "MsgMsgDisplayed" ) {
+      // get out of the synchronous path where we interfere with the preview
+      //  window.
+      window.setTimeout(this._bounce, 100, this.onMessageDisplayed);
+    }
+  },
+  
+  _bounce: function(aMethod) {
+    aMethod.call(expmess);
+  },
+  
+  onMessageDisplayed: function() {
+    var msgHdr = gDBView.hdrForFirstSelectedMessage;
+    try {
       if (msgHdr != null) {
         var selectedMessage = Gloda.getMessageForHeader(msgHdr);
-        expmess.log.info("Conversation: " + selectedMessage.conversation.id +
+        this.log.info("Conversation: " + selectedMessage.conversation.id +
                           " : " + selectedMessage.conversation.subject);
         var threadMessages = selectedMessage.conversation.messages;
         
-        expmess.log.info("We got " + threadMessages.length + " messages");
+        this.log.info("We got " + threadMessages.length + " messages");
         
-        expmess.jsThreadMessageTreeView.messages = threadMessages;
+        this.jsThreadMessageTreeView.messages = threadMessages;
         
         var attrFrom = Gloda.getAttrDef(Gloda.BUILT_IN, "from");
         var authorIdentityAPV = selectedMessage.getSingleAttribute(attrFrom);
         if (authorIdentityAPV == null) {
-          expmess.log.error("authorIdentityAPV is null using attrib " +
+          this.log.error("authorIdentityAPV is null using attrib " +
                             attrFrom);
         }
         authorMessages = Gloda.queryMessagesAPV([authorIdentityAPV]);
         
-        expmess.jsAuthorMessageTreeView.messages = authorMessages;
-        expmess.visAuthor.messages = authorMessages;
-        expmess.visAuthor.selectedMessage = null;
+        this.jsAuthorMessageTreeView.messages = authorMessages;
+        this.visAuthor.messages = authorMessages;
+        this.visAuthor.selectedMessage = null;
         
         // so, the e-mail address really shouldn't be all unicode-y, but this
         //  at the very least converts the string to a byte array.
         var md5hash = GlodaUtils.md5HashString(selectedMessage.from.value);
         var gravURL = "http://www.gravatar.com/avatar/" + md5hash + 
                                 "?d=identicon&s=80&r=g";
-        expmess.authorImage.src = gravURL;
-        expmess.authorName.value = selectedMessage.from.contact.name;
+        this.authorImage.src = gravURL;
+        this.authorName.value = selectedMessage.from.contact.name;
       }
     } catch (ex) {
-      expmess.log.info("Exception:" + ex);
-      expmess.authorImage.src = null;
-      expmess.authorName.value = ":(";
-      expmess.jsThreadMessageTreeView.messages = [];
-      expmess.jsAuthorMessageTreeView.messages = [];
-      expmess.visAuthor.messages = [];
-      expmess.visAuthor.selectedMessage = null;
-      } 
-    },
-      
-    onEndHeaders: function() {},
+      this.log.info("Exception:" + ex);
+      this.authorImage.src = null;
+      this.authorName.value = ":(";
+      this.jsThreadMessageTreeView.messages = [];
+      this.jsAuthorMessageTreeView.messages = [];
+      this.visAuthor.messages = [];
+      this.visAuthor.selectedMessage = null;
+    } 
   },
 
   onLoad: function() {
     // initialization code
     this.initialized = true;
     this.strings = document.getElementById("expmess-strings");
+    
+    var observerService = Components.classes["@mozilla.org/observer-service;1"].
+                          getService(Components.interfaces.nsIObserverService);
+    observerService.addObserver(this, "MsgMsgDisplayed", false);                           
     
     this.threadMessageTree = document.getElementById("threadMessageTree");
     this.jsThreadMessageTreeView = new EMTreeView(null);
@@ -129,8 +142,6 @@ var expmess = {
     
     this.authorImage = document.getElementById("authorPicture");
     this.authorName = document.getElementById("authorName");
-    
-    gMessageListeners.push(this._headerHandler);
     
     this.indexingStatusLabel = document.getElementById("mineStatusLabel");
     this.progressFolders = document.getElementById("mineFolderProgress");
