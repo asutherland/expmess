@@ -95,7 +95,7 @@ var expmess = {
           this.log.error("authorIdentityAPV is null using attrib " +
                             attrFrom);
         }
-        authorMessages = Gloda.queryMessagesAPV([authorIdentityAPV]);
+        var authorMessages = Gloda.queryMessagesAPV([authorIdentityAPV]);
         
         this.jsAuthorMessageTreeView.messages = authorMessages;
         this.visAuthor.messages = authorMessages;
