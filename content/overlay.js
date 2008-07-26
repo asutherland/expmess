@@ -60,6 +60,7 @@ var expmess = {
   
   authorImage: null,
   authorName: null,
+  authorEmail: null,
   
   log: Log4Moz.Service.getLogger("expmess.overlay"),
 
@@ -107,11 +108,13 @@ var expmess = {
                                 "?d=identicon&s=80&r=g";
         this.authorImage.src = gravURL;
         this.authorName.value = selectedMessage.from.contact.name;
+        this.authorEmail.value = selectedMessage.from.value;
       }
     } catch (ex) {
       this.log.info("Exception:" + ex);
       this.authorImage.src = null;
       this.authorName.value = ":(";
+      this.authorEmail.value = "";
       this.jsThreadMessageTreeView.messages = [];
       this.jsAuthorMessageTreeView.messages = [];
       this.visAuthor.messages = [];
@@ -142,6 +145,7 @@ var expmess = {
     
     this.authorImage = document.getElementById("authorPicture");
     this.authorName = document.getElementById("authorName");
+    this.authorEmail = document.getElementById("authorEmail");
     
     this.indexingStatusLabel = document.getElementById("mineStatusLabel");
     this.progressFolders = document.getElementById("mineFolderProgress");
@@ -165,6 +169,22 @@ var expmess = {
                                   .getService(Components.interfaces.nsIPromptService);
     promptService.alert(window, this.strings.getString("helloMessageTitle"),
                                 this.strings.getString("helloMessage"));
+  },
+
+  onComposeToClicked: function() {
+    try {
+      var fields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
+      var params = Components.classes["@mozilla.org/messengercompose/composeparams;1"].createInstance(Components.interfaces.nsIMsgComposeParams);
+      fields.to = this.authorEmail.value;
+      this.log.debug("  authorEmail: " + this.authorEmail.value);
+      params.type = Components.interfaces.nsIMsgCompType.New;
+      params.format = Components.interfaces.nsIMsgCompFormat.Default;
+      params.identity = accountManager.getFirstIdentityForServer(GetLoadedMsgFolder().server);
+      params.composeFields = fields;
+      msgComposeService.OpenComposeWindowWithParams(null, params);
+    } catch(ex) {
+      this.log.info("Exception:" + ex);
+    }
   },
 
   onIndexProgress: function(aStatus, aFolderName,
