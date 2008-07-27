@@ -60,28 +60,20 @@
         <html:canvas id="authorCanvas" flex="1"
           style="height: 80px; padding: 4px; width:300px;"></html:canvas>
       </hbox>
-      <label value="Other messages by author:"/>
-      <tree id="authorMessageTree" flex="1"
-            onclick="return expmess.onClicked(expmess.authorMessageTree,
-                          expmess.jsAuthorMessageTreeView, event);"
-            onselect="return expmess.onSelected(expmess.authorMessageTree,
-                          expmess.jsAuthorMessageTreeView, expmess.visAuthor);"
+      <label value="This message..."/>
+      <richlistbox id="factBox" flex="1"
+            onclick="return expmess.onFactClicked(event);"
+            onselect="return expmess.onFactSelected(event);"
             >
-        <treecols>
-          <treecol id="authorSenderCol" flex="4" primary="true" label="Sender"
-            hidden="true"/>
-          <splitter class="tree-splitter"/>
-          <treecol id="authorSubjectCol" flex="7" label="Subject"/>
-          <splitter class="tree-splitter"/>
-          <treecol id="authorDateCol" flex="2" label="Date"/>
-        </treecols>
-        <treechildren/>
-      </tree>
+      </richlistbox>
       <separator class="groove"/>      
-      <label value="Messages in thread:"/>
+      <label value="Messages from fact:"/>
       <tree id="threadMessageTree" flex="1"
             onclick="return expmess.onClicked(expmess.threadMessageTree,
-                          expmess.jsThreadMessageTreeView, event);">
+                          expmess.jsThreadMessageTreeView, event);"
+            onselect="return expmess.onSelected(expmess.threadMessageTree,
+                          expmess.jsThreadMessageTreeView, expmess.visAuthor);"
+            >
         <treecols>
           <treecol id="threadSenderCol" flex="4" primary="true" label="Sender"/>
           <splitter class="tree-splitter"/>

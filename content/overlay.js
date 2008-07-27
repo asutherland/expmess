@@ -47,9 +47,6 @@ var expmess = {
   threadMessageTree: null,
   jsThreadMessageTreeView: null,
   
-  authorMessageTree: null,
-  jsAuthorMessageTreeView: null,
-  
   indexingStatusLabel: null,
   progressFolders: null,
   progressMessages: null,
@@ -61,6 +58,8 @@ var expmess = {
   authorImage: null,
   authorName: null,
   authorEmail: null,
+  
+  factBox: null,
   
   log: Log4Moz.Service.getLogger("expmess.overlay"),
 
@@ -95,9 +94,9 @@ var expmess = {
           this.log.error("authorIdentityAPV is null using attrib " +
                             attrFrom);
         }
+
         var authorMessages = Gloda.queryMessagesAPV([authorIdentityAPV]);
         
-        this.jsAuthorMessageTreeView.messages = authorMessages;
         this.visAuthor.messages = authorMessages;
         this.visAuthor.selectedMessage = null;
         
@@ -109,14 +108,16 @@ var expmess = {
         this.authorImage.src = gravURL;
         this.authorName.value = selectedMessage.from.contact.name;
         this.authorEmail.value = selectedMessage.from.value;
+        
+        this.updateFacts(selectedMessage);
       }
     } catch (ex) {
-      this.log.info("Exception:" + ex);
+      this.log.info("Exception at " + ex.fileName + ":" + ex.lineNumber + ":" +
+                    ex);
       this.authorImage.src = null;
       this.authorName.value = ":(";
       this.authorEmail.value = "";
       this.jsThreadMessageTreeView.messages = [];
-      this.jsAuthorMessageTreeView.messages = [];
       this.visAuthor.messages = [];
       this.visAuthor.selectedMessage = null;
     } 
@@ -139,10 +140,6 @@ var expmess = {
     this.visAuthor = new EMVis(this.authorCanvas, null);
     this.visAuthor.render();
     
-    this.authorMessageTree = document.getElementById("authorMessageTree");
-    this.jsAuthorMessageTreeView = new EMTreeView(null);
-    this.authorMessageTree.view = this.jsAuthorMessageTreeView;
-    
     this.authorImage = document.getElementById("authorPicture");
     this.authorName = document.getElementById("authorName");
     this.authorEmail = document.getElementById("authorEmail");
@@ -150,6 +147,8 @@ var expmess = {
     this.indexingStatusLabel = document.getElementById("mineStatusLabel");
     this.progressFolders = document.getElementById("mineFolderProgress");
     this.progressMessages = document.getElementById("mineMessageProgress");
+    
+    this.factBox = document.getElementById("factBox");
     
     this.progressListener = GlodaIndexer.addListener(
       function(status,fn, cf, tf, cm, tm) {
@@ -216,13 +215,47 @@ var expmess = {
        
       return true;
     }
-    return false;   
+    return false;
   },
   
   onSelected: function(tree, view, vis) {
     if (tree.currentIndex >= 0) {
       vis.selectedMessage = view.messages[tree.currentIndex];
     }
+  },
+  
+  updateFacts: function(aMessage) {
+    var factBox = this.factBox;
+    var XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+    
+    while (factBox.hasChildNodes()) {
+      factBox.removeChild(factBox.firstChild);
+    }
+    
+    var attributes = aMessage.attributes;
+    for (var iAttrib=0; iAttrib < attributes.length; iAttrib++) {
+      var attribDef = attributes[iAttrib][0];
+      var value = attributes[iAttrib][1];
+      
+      var factItem = document.createElementNS(XUL_NS, "richlistitem");
+      var desc = document.createElementNS(XUL_NS, "description");
+      
+      // TODO parameter-impact on noun/attribute issue.
+      var explanation = attribDef.explain(null, null, value);
+      this.log.debug("EXPLANATION: " + explanation);
+      desc.setAttribute("value", explanation);
+      factItem.appendChild(desc);
+      
+      factBox.appendChild(factItem);
+    }
+  },
+  
+  onFactClicked: function(event) {
+    this.log.debug("FACT CLICKED: " + event);
+  },
+  
+  onFactSelected: function(event) {
+    this.log.debug("FACT SELECTED: " + event);
   },
   
   onGoIndex: function() {
