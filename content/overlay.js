@@ -44,16 +44,19 @@ Components.utils.import("resource://expmess/modules/EMTreeView.js");
 Components.utils.import("resource://expmess/modules/EMVis.js");
 
 var expmess = {
-  threadMessageTree: null,
-  jsThreadMessageTreeView: null,
+  constraintMessageTree: null,
+  jsConstraintMessageTreeView: null,
   
   indexingStatusLabel: null,
   progressFolders: null,
   progressMessages: null,
   progressListener: null,
   
-  authorCanvas: null,
-  visAuthor: null,
+  constraintCanvas: null,
+  visConstraint: null,
+  
+  // list of: [attrib, parameter, value (and a second value if it's a range)]
+  constraintsAPV: [],
   
   authorImage: null,
   authorName: null,
@@ -80,25 +83,9 @@ var expmess = {
     try {
       if (msgHdr != null) {
         var selectedMessage = Gloda.getMessageForHeader(msgHdr);
-        this.log.info("Conversation: " + selectedMessage.conversation.id +
-                          " : " + selectedMessage.conversation.subject);
-        var threadMessages = selectedMessage.conversation.messages;
-        
-        this.log.info("We got " + threadMessages.length + " messages");
-        
-        this.jsThreadMessageTreeView.messages = threadMessages;
         
         var attrFrom = Gloda.getAttrDef(Gloda.BUILT_IN, "from");
-        var authorIdentityAPV = selectedMessage.getSingleAttribute(attrFrom);
-        if (authorIdentityAPV == null) {
-          this.log.error("authorIdentityAPV is null using attrib " +
-                            attrFrom);
-        }
-
-        var authorMessages = Gloda.queryMessagesAPV([authorIdentityAPV]);
-        
-        this.visAuthor.messages = authorMessages;
-        this.visAuthor.selectedMessage = null;
+        this.constraintsAPV = selectedMessage.getSingleAttribute(attrFrom);
         
         // so, the e-mail address really shouldn't be all unicode-y, but this
         //  at the very least converts the string to a byte array.
@@ -110,6 +97,7 @@ var expmess = {
         this.authorEmail.value = selectedMessage.from.value;
         
         this.updateFacts(selectedMessage);
+        this.updateConstraints();
       }
     } catch (ex) {
       this.log.info("Exception at " + ex.fileName + ":" + ex.lineNumber + ":" +
@@ -117,10 +105,37 @@ var expmess = {
       this.authorImage.src = null;
       this.authorName.value = ":(";
       this.authorEmail.value = "";
-      this.jsThreadMessageTreeView.messages = [];
-      this.visAuthor.messages = [];
-      this.visAuthor.selectedMessage = null;
+      this.jsConstraintMessageTreeView.messages = [];
+      this.visConstraint.messages = [];
+      this.visConstraint.selectedMessage = null;
     } 
+  },
+  
+  updateConstraints: function () {
+    var elements = document.getElementsByClassName("magic-constraint");
+    var constraints = [];
+    for (var iElem=0; iElem < elements.length; iElem++) {
+      var elem = elements[iElem];
+      var attr = elem.actionData[0];
+      var action = elem.actionData[1];
+      var value = elem.actionData[2];
+      
+      if (elem.checked)
+        constraints.push(action.makeConstraint(attr, value));
+    }
+    
+    this.constraintsAPV = constraints;
+  
+    this.log.debug("constraints: " + this.constraintsAPV);
+  
+    var messages = Gloda.queryMessagesAPV(this.constraintsAPV);
+
+    this.log.debug("  returned " + messages.length + " messages");
+
+    this.jsConstraintMessageTreeView.messages = messages;
+
+    this.visConstraint.messages = messages;
+    this.visConstraint.selectedMessage = null;
   },
 
   onLoad: function() {
@@ -132,13 +147,13 @@ var expmess = {
                           getService(Components.interfaces.nsIObserverService);
     observerService.addObserver(this, "MsgMsgDisplayed", false);                           
     
-    this.threadMessageTree = document.getElementById("threadMessageTree");
-    this.jsThreadMessageTreeView = new EMTreeView(null);
-    this.threadMessageTree.view = this.jsThreadMessageTreeView;
+    this.constraintMessageTree = document.getElementById("constraintMessageTree");
+    this.jsConstraintMessageTreeView = new EMTreeView(null);
+    this.constraintMessageTree.view = this.jsConstraintMessageTreeView;
     
-    this.authorCanvas = document.getElementById("authorCanvas");
-    this.visAuthor = new EMVis(this.authorCanvas, null);
-    this.visAuthor.render();
+    this.constraintCanvas = document.getElementById("constraintCanvas");
+    this.visConstraint = new EMVis(this.constraintCanvas, null);
+    this.visConstraint.render();
     
     this.authorImage = document.getElementById("authorPicture");
     this.authorName = document.getElementById("authorName");
@@ -233,29 +248,50 @@ var expmess = {
     }
     
     var attributes = aMessage.attributes;
+    attributes.sort(function (a, b) {return a[0].id - b[0].id; });
     for (var iAttrib=0; iAttrib < attributes.length; iAttrib++) {
       var attribDef = attributes[iAttrib][0];
       var value = attributes[iAttrib][1];
       
+      // yes, yes, XBL.
       var factItem = document.createElementNS(XUL_NS, "richlistitem");
+      var factVBox = document.createElementNS(XUL_NS, "vbox");
+      var factActionBox = document.createElementNS(XUL_NS, "hbox");
       var desc = document.createElementNS(XUL_NS, "description");
       
       // TODO parameter-impact on noun/attribute issue.
       var explanation = attribDef.explain(null, null, value);
-      this.log.debug("EXPLANATION: " + explanation);
       desc.setAttribute("value", explanation);
-      factItem.appendChild(desc);
-      
+      var factActions = Gloda.getNounActions(attribDef.objectNoun, "filter");
+      for (var iAction=0; iAction < factActions.length; iAction++) {
+        var action = factActions[iAction];
+        var button = document.createElementNS(XUL_NS, "checkbox");
+        button.setAttribute("label", action.shortName);
+        button.className = "magic-constraint";
+        button.actionData = [attribDef, action, value];
+        // set it checked if it's "from" (attribute) "from" (action)
+        if ((attribDef.attributeName == "from") &&
+            (action.shortName == "from")) {
+          button.setAttribute("checked", true); 
+          this.log.debug("Found from from constraint! " + button.checked);
+        }
+        factActionBox.appendChild(button);
+      }
+
+      factVBox.appendChild(desc);
+      factVBox.appendChild(factActionBox);
+      factItem.appendChild(factVBox);
       factBox.appendChild(factItem);
     }
   },
   
   onFactClicked: function(event) {
-    this.log.debug("FACT CLICKED: " + event);
+    if (event.target && event.target.actionData) {
+      this.updateConstraints();
+    }
   },
   
   onFactSelected: function(event) {
-    this.log.debug("FACT SELECTED: " + event);
   },
   
   onGoIndex: function() {

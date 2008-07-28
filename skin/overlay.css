@@ -1,5 +1,4 @@
-/* This is just an example.  You shouldn't do this. */
-#expmess-hello
+#factbox richlistitem
 {
-  color: red ! important;
+  overflow: auto;
 }

@@ -56,23 +56,25 @@
           <label id="authorEmail" class="text-link" value="" onclick="expmess.onComposeToClicked();"/>
         </vbox>
       </hbox>
-      <hbox flex="0">
-        <html:canvas id="authorCanvas" flex="1"
-          style="height: 80px; padding: 4px; width:300px;"></html:canvas>
-      </hbox>
-      <label value="This message..."/>
+      <label value="This message... (and filters)"/>
       <richlistbox id="factBox" flex="1"
             onclick="return expmess.onFactClicked(event);"
             onselect="return expmess.onFactSelected(event);"
             >
       </richlistbox>
-      <separator class="groove"/>      
+      <splitter id="factOrMessages" persist="state" />
+     <vbox flex="1">
+      <hbox flex="0">
+        <html:canvas id="constraintCanvas" flex="1"
+          style="height: 60px; padding: 4px; width:300px;"></html:canvas>
+      </hbox>
       <label value="Messages from fact:"/>
-      <tree id="threadMessageTree" flex="1"
-            onclick="return expmess.onClicked(expmess.threadMessageTree,
-                          expmess.jsThreadMessageTreeView, event);"
-            onselect="return expmess.onSelected(expmess.threadMessageTree,
-                          expmess.jsThreadMessageTreeView, expmess.visAuthor);"
+      <tree id="constraintMessageTree" flex="1"
+            onclick="return expmess.onClicked(expmess.constraintMessageTree,
+                          expmess.jsConstraintMessageTreeView, event);"
+            onselect="return expmess.onSelected(expmess.constaintMessageTree,
+                          expmess.jsConstraintMessageTreeView,
+                          expmess.visConstraint);"
             >
         <treecols>
           <treecol id="threadSenderCol" flex="4" primary="true" label="Sender"/>
@@ -83,6 +85,7 @@
         </treecols>
         <treechildren/>
       </tree>
+     </vbox>
       <groupbox id="mineStatusBox" flex="0">
         <caption label="Indexing"/>
         <grid>

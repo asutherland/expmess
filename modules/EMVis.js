@@ -156,7 +156,7 @@ EMVis.prototype = {
     let lastTS = agg[agg.length-1][0].valueOf();
     let tsRange = lastTS - firstTS;
     
-    let msgHeight = 10;
+    let msgHeight = 4;
     
     for (let iAgg=0; iAgg < agg.length; iAgg++) {
       let bucket = agg[iAgg];
