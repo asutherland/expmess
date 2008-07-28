@@ -65,10 +65,10 @@
       <splitter id="factOrMessages" persist="state" />
      <vbox flex="1">
       <hbox flex="0">
-        <html:canvas id="constraintCanvas" flex="1"
-          style="height: 60px; padding: 4px; width:300px;"></html:canvas>
+        <html:canvas id="constraintCanvas" flex="1" height="40"
+          style="height: 40px; padding: 4px; width:300px;"></html:canvas>
       </hbox>
-      <label value="Messages from fact:"/>
+      <label value="Messages (filtered):"/>
       <tree id="constraintMessageTree" flex="1"
             onclick="return expmess.onClicked(expmess.constraintMessageTree,
                           expmess.jsConstraintMessageTreeView, event);"

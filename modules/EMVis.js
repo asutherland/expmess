@@ -112,7 +112,6 @@ EMVis.prototype = {
       threshDate.setMinutes(0);
       threshDate.setSeconds(0);
       threshDate.setMilliseconds(0);
-      
       if ((threshDate - bucketDate) != 0) {
         bucketDate = threshDate;
         bucket = [bucketDate];
@@ -156,7 +155,7 @@ EMVis.prototype = {
     let lastTS = agg[agg.length-1][0].valueOf();
     let tsRange = lastTS - firstTS;
     
-    let msgHeight = 4;
+    let msgHeight = 2;
     
     for (let iAgg=0; iAgg < agg.length; iAgg++) {
       let bucket = agg[iAgg];
@@ -189,7 +188,6 @@ EMVis.prototype = {
         ctx.moveTo(x, curY);
         ctx.lineTo(x, curY - msgHeight);
         ctx.stroke();
-        
         curY -= msgHeight;
       }
     }
