@@ -72,7 +72,7 @@
       <tree id="constraintMessageTree" flex="1"
             onclick="return expmess.onClicked(expmess.constraintMessageTree,
                           expmess.jsConstraintMessageTreeView, event);"
-            onselect="return expmess.onSelected(expmess.constaintMessageTree,
+            onselect="return expmess.onSelected(expmess.constraintMessageTree,
                           expmess.jsConstraintMessageTreeView,
                           expmess.visConstraint);"
             >
