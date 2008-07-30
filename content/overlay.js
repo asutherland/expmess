@@ -259,8 +259,7 @@ var expmess = {
       var factActionBox = document.createElementNS(XUL_NS, "hbox");
       var desc = document.createElementNS(XUL_NS, "description");
       
-      // TODO parameter-impact on noun/attribute issue.
-      var explanation = attribDef.explain(null, null, value);
+      var explanation = attribDef.explain(null, value);
       desc.setAttribute("value", explanation);
       var factActions = Gloda.getNounActions(attribDef.objectNoun, "filter");
       for (var iAction=0; iAction < factActions.length; iAction++) {
@@ -287,6 +286,17 @@ var expmess = {
   
   onFactClicked: function(event) {
     if (event.target && event.target.actionData) {
+      // if alt was held down, make this the only selected thing...
+      if (event.ctrlKey) {
+        var elements = document.getElementsByClassName("magic-constraint");
+        var constraints = [];
+        for (var iElem=0; iElem < elements.length; iElem++) {
+          var elem = elements[iElem];
+          if (elem !== event.target)
+            elem.setAttribute("checked", false);
+        }
+      }
+
       this.updateConstraints();
     }
   },
