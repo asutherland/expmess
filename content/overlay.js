@@ -93,7 +93,12 @@ var expmess = {
         var gravURL = "http://www.gravatar.com/avatar/" + md5hash + 
                                 "?d=identicon&s=80&r=g";
         this.authorImage.src = gravURL;
-        this.authorName.value = selectedMessage.from.contact.name;
+        var authorCard = selectedMessage.from.abCard;
+        if (authorCard) {
+          this.authorName.value = (authorCard.displayName ||
+                                        authorCard.nickName);
+        } else
+          this.authorName.value = selectedMessage.from.contact.name;
         this.authorEmail.value = selectedMessage.from.value;
         
         this.updateFacts(selectedMessage);
