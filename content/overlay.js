@@ -70,7 +70,7 @@ var expmess = {
     if (aTopic == "MsgMsgDisplayed" ) {
       // get out of the synchronous path where we interfere with the preview
       //  window.
-      window.setTimeout(this._bounce, 100, this.onMessageDisplayed);
+      window.setTimeout(this._bounce, 300, this.onMessageDisplayed);
     }
   },
   
@@ -116,7 +116,7 @@ var expmess = {
     } 
   },
   
-  updateConstraints: function () {
+  updateConstraints: function updateConstraints() {
     var elements = document.getElementsByClassName("magic-constraint");
     var constraints = [];
     for (var iElem=0; iElem < elements.length; iElem++) {
