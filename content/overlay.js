@@ -170,7 +170,7 @@ var expmess = {
     
     this.factBox = document.getElementById("factBox");
     
-    this.progressListener = GlodaIndexer.addListener(
+    this.progressListener = Gloda.addIndexerListener(
       function(status,fn, cf, tf, cm, tm) {
         expmess.onIndexProgress(status, fn,cf,tf,cm,tm);
       });
@@ -207,12 +207,27 @@ var expmess = {
   },
 
   onIndexProgress: function(aStatus, aFolderName,
-                            aCurFolderIndex, aTotalFolders,
-                            aCurMessageIndex, aTotalMessages) {
+                            aCurJobIndex, aTotalJobs,
+                            aCurItemIndex, aTotalItems) {
+    let statusMessage;
+    if (aStatus == Gloda.kIndexerIdle)
+      statusMessage = this.strings.getString("indexingStatusIdle");
+    else if (aStatus == Gloda.kIndexerIndexing)
+      statusMessage = this.strings.getString("indexingStatusIndexing");
+    else if (aStatus == Gloda.kIndexerMoving)
+      statusMessage = this.strings.getString("indexingStatusMoving");
+    else if (aStatus == Gloda.kIndexerRemoving)
+      statusMessage = this.strings.getString("indexingStatusRemoving");
+    else
+      statusMessage = "???";
+    
+    if (aFolderName)
+      statusMessage += " " + aFolderName;
+    
     this.indexingStatusLabel.value = aStatus;
-    this.progressFolders.value = Math.floor(aCurFolderIndex / aTotalFolders * 
+    this.progressFolders.value = Math.floor(aCurJobIndex / aTotalJobs * 
                                             100);
-    this.progressMessages.value = Math.floor(aCurMessageIndex / aTotalMessages *
+    this.progressMessages.value = Math.floor(aCurItemIndex / aTotalItems *
                                              100);
   },  
 

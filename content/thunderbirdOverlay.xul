@@ -41,7 +41,7 @@
 <overlay id="expmess-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
          xmlns:html="http://www.w3.org/1999/xhtml">
-  <script src="overlay.js"/>
+  <script src="overlay.js"  type="application/javascript;version=1.8"/>
   <stringbundleset id="stringbundleset">
     <stringbundle id="expmess-strings" src="chrome://expmess/locale/expmess.properties"/>
   </stringbundleset>
