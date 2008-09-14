@@ -279,7 +279,7 @@ var expmess = {
       var factActionBox = document.createElementNS(XUL_NS, "hbox");
       var desc = document.createElementNS(XUL_NS, "description");
       
-      var explanation = attribDef.explain(null, value);
+      var explanation = attribDef.attributeName + ": " + value;
       desc.setAttribute("value", explanation);
       var factActions = Gloda.getNounActions(attribDef.objectNoun, "filter");
       for (var iAction=0; iAction < factActions.length; iAction++) {
