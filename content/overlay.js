@@ -131,16 +131,16 @@ var expmess = {
     
     this.constraintsAPV = constraints;
   
-    this.log.debug("constraints: " + this.constraintsAPV);
+    //this.log.debug("constraints: " + this.constraintsAPV);
   
-    var messages = Gloda.queryMessagesAPV(this.constraintsAPV);
+    //var messages = Gloda.queryMessagesAPV(this.constraintsAPV);
 
-    this.log.debug("  returned " + messages.length + " messages");
+    //this.log.debug("  returned " + messages.length + " messages");
 
-    this.jsConstraintMessageTreeView.messages = messages;
+    //this.jsConstraintMessageTreeView.messages = messages;
 
-    this.visConstraint.messages = messages;
-    this.visConstraint.selectedMessage = null;
+    //this.visConstraint.messages = messages;
+    //this.visConstraint.selectedMessage = null;
   },
 
   onLoad: function() {
