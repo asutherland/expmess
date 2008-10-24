@@ -50,7 +50,7 @@
     <splitter id="datamine_splitter" collapse="after" persist="state"/>
     <vbox id="datamine" persist="width">
       <hbox id="authorBox" flex="0">
-        <image id="authorPicture" src="" width="53" height="53" flex="0"/>
+        <image id="authorPicture" src="" width="64" height="64" flex="0"/>
         <vbox flex="0">
           <label id="authorName" class="header" value=""/>
           <label id="authorEmail" class="text-link" value="" onclick="expmess.onComposeToClicked();"/>

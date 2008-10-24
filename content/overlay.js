@@ -78,31 +78,35 @@ var expmess = {
     aMethod.call(expmess);
   },
   
+  _currentMessageCollectionListener: {
+    onItemsAdded: function(aItems, aCollection) {},
+    onItemsModified: function(aItems, aCollection) {},
+    onItemsRemoved: function(aItems, aCollection) {},
+    onQueryCompleted: function(aCollection) {
+      if (!aCollection.items.length)
+        return;
+      
+      let selectedMessage = aCollection.items[0];
+
+      let authorCard = selectedMessage.from.abCard;
+      if (authorCard) {
+        expmess.authorName.value = (authorCard.displayName ||
+                                    authorCard.nickName);
+      } else
+        expmess.authorName.value = selectedMessage.from.contact.name;
+      expmess.authorEmail.value = selectedMessage.from.value;
+      expmess.authorImage.src = selectedMessage.from.pictureURL(64);
+      
+      expmess.updateFacts(selectedMessage);
+    },
+  },
+  
   onMessageDisplayed: function() {
     var msgHdr = gDBView.hdrForFirstSelectedMessage;
     try {
       if (msgHdr != null) {
-        var selectedMessage = Gloda.getMessageForHeader(msgHdr);
-        
-        var attrFrom = Gloda.getAttrDef(Gloda.BUILT_IN, "from");
-        this.constraintsAPV = selectedMessage.getSingleAttribute(attrFrom);
-        
-        // so, the e-mail address really shouldn't be all unicode-y, but this
-        //  at the very least converts the string to a byte array.
-        var md5hash = GlodaUtils.md5HashString(selectedMessage.from.value);
-        var gravURL = "http://www.gravatar.com/avatar/" + md5hash + 
-                                "?d=identicon&s=80&r=g";
-        this.authorImage.src = gravURL;
-        var authorCard = selectedMessage.from.abCard;
-        if (authorCard) {
-          this.authorName.value = (authorCard.displayName ||
-                                        authorCard.nickName);
-        } else
-          this.authorName.value = selectedMessage.from.contact.name;
-        this.authorEmail.value = selectedMessage.from.value;
-        
-        this.updateFacts(selectedMessage);
-        this.updateConstraints();
+        this.selectedMessageCollection = Gloda.getMessageCollectionForHeader(
+            msgHdr, this._currentMessageCollectionListener);
       }
     } catch (ex) {
       this.log.info("Exception at " + ex.fileName + ":" + ex.lineNumber + ":" +
@@ -224,7 +228,7 @@ var expmess = {
     if (aFolderName)
       statusMessage += " " + aFolderName;
     
-    this.indexingStatusLabel.value = aStatus;
+    this.indexingStatusLabel.value = statusMessage;
     this.progressFolders.value = Math.floor(aCurJobIndex / aTotalJobs * 
                                             100);
     this.progressMessages.value = Math.floor(aCurItemIndex / aTotalItems *
@@ -267,40 +271,37 @@ var expmess = {
       factBox.removeChild(factBox.firstChild);
     }
     
-    var attributes = aMessage.attributes;
-    attributes.sort(function (a, b) {return a[0].id - b[0].id; });
-    for (var iAttrib=0; iAttrib < attributes.length; iAttrib++) {
-      var attribDef = attributes[iAttrib][0];
-      var value = attributes[iAttrib][1];
-      
-      // yes, yes, XBL.
-      var factItem = document.createElementNS(XUL_NS, "richlistitem");
-      var factVBox = document.createElementNS(XUL_NS, "vbox");
-      var factActionBox = document.createElementNS(XUL_NS, "hbox");
-      var desc = document.createElementNS(XUL_NS, "description");
-      
-      var explanation = attribDef.attributeName + ": " + value;
-      desc.setAttribute("value", explanation);
-      var factActions = Gloda.getNounActions(attribDef.objectNoun, "filter");
-      for (var iAction=0; iAction < factActions.length; iAction++) {
-        var action = factActions[iAction];
-        var button = document.createElementNS(XUL_NS, "checkbox");
-        button.setAttribute("label", action.shortName);
-        button.className = "magic-constraint";
-        button.actionData = [attribDef, action, value];
-        // set it checked if it's "from" (attribute) "from" (action)
-        if ((attribDef.attributeName == "from") &&
-            (action.shortName == "from")) {
-          button.setAttribute("checked", true); 
-          this.log.debug("Found from from constraint! " + button.checked);
+    for each (let [attribDef, values] in aMessage.enumerateAttributes()) {
+      for each (let value in values) {
+        // yes, yes, XBL.
+        var factItem = document.createElementNS(XUL_NS, "richlistitem");
+        var factVBox = document.createElementNS(XUL_NS, "vbox");
+        var factActionBox = document.createElementNS(XUL_NS, "hbox");
+        var desc = document.createElementNS(XUL_NS, "description");
+        
+        var explanation = attribDef.attributeName + ": " + value;
+        desc.setAttribute("value", explanation);
+        var factActions = Gloda.getNounActions(attribDef.objectNoun, "filter");
+        for (var iAction=0; iAction < factActions.length; iAction++) {
+          var action = factActions[iAction];
+          var button = document.createElementNS(XUL_NS, "checkbox");
+          button.setAttribute("label", action.shortName);
+          button.className = "magic-constraint";
+          button.actionData = [attribDef, action, value];
+          // set it checked if it's "from" (attribute) "from" (action)
+          if ((attribDef.attributeName == "from") &&
+              (action.shortName == "from")) {
+            button.setAttribute("checked", true); 
+            this.log.debug("Found from from constraint! " + button.checked);
+          }
+          factActionBox.appendChild(button);
         }
-        factActionBox.appendChild(button);
-      }
 
-      factVBox.appendChild(desc);
-      factVBox.appendChild(factActionBox);
-      factItem.appendChild(factVBox);
-      factBox.appendChild(factItem);
+        factVBox.appendChild(desc);
+        factVBox.appendChild(factActionBox);
+        factItem.appendChild(factVBox);
+        factBox.appendChild(factItem);
+      }
     }
   },
   
