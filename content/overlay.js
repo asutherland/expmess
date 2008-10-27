@@ -80,7 +80,11 @@ var expmess = {
   
   _currentMessageCollectionListener: {
     onItemsAdded: function(aItems, aCollection) {},
-    onItemsModified: function(aItems, aCollection) {},
+    onItemsModified: function(aItems, aCollection) {
+      expmess.log.info("Updating message because of modified notification!");
+      let selectedMessage = aCollection.items[0];
+      expmess.updateFacts(selectedMessage);
+    },
     onItemsRemoved: function(aItems, aCollection) {},
     onQueryCompleted: function(aCollection) {
       if (!aCollection.items.length)
