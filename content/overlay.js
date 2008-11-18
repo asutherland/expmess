@@ -35,10 +35,10 @@
  * 
  * ***** END LICENSE BLOCK ***** */
 
-Components.utils.import("resource://gloda/modules/log4moz.js");
-Components.utils.import("resource://gloda/modules/gloda.js");
-Components.utils.import("resource://gloda/modules/indexer.js");
-Components.utils.import("resource://gloda/modules/utils.js");
+Components.utils.import("resource://app/modules/gloda/log4moz.js");
+Components.utils.import("resource://app/modules/gloda/public.js")
+Components.utils.import("resource://app/modules/gloda/indexer.js")
+Components.utils.import("resource://app/modules/gloda/utils.js")
 
 Components.utils.import("resource://expmess/modules/EMTreeView.js");
 Components.utils.import("resource://expmess/modules/EMVis.js");
