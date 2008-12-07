@@ -44,7 +44,7 @@ const Cu = Components.utils;
 
 Cu.import("resource://app/modules/gloda/log4moz.js");
 
-const LOG = Log4Moz.Service.getLogger("expmess.EMTreeView");
+const LOG = Log4Moz.repository.getLogger("expmess.EMTreeView");
 
 function EMTreeView(aMessages) {
   this.treeBox = null;

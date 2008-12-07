@@ -64,7 +64,7 @@ var expmess = {
   
   factBox: null,
   
-  log: Log4Moz.Service.getLogger("expmess.overlay"),
+  log: Log4Moz.repository.getLogger("expmess.overlay"),
 
   observe: function(aSubject, aTopic, aData) {
     if (aTopic == "MsgMsgDisplayed" ) {

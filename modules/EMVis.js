@@ -44,7 +44,7 @@ const Cu = Components.utils;
 
 Cu.import("resource://app/modules/gloda/log4moz.js");
 
-const LOG = Log4Moz.Service.getLogger("expmess.EMVis");
+const LOG = Log4Moz.repository.getLogger("expmess.EMVis");
 
 // The Tango color palette is public domain. and pretty.
 const TANGO_COLORS = [
